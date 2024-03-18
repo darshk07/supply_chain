@@ -25,10 +25,10 @@ const RootLayout = () => {
 
   useEffect(() => {
     console.log("isConnected", isConnected);
-    if (isConnected) {
-      console.log("Connected");
-      navigate("/home");
-    }
+    // if (isConnected) {
+    //   console.log("Connected");
+    //   navigate("/home");
+    // }
     if (!isConnected) {
       console.log("Not connected");
       navigate("/");
@@ -50,7 +50,7 @@ const RootLayout = () => {
   }, [isLoading]);
 
   return (
-    <div className="flex flex-col h-screen relative">
+    <div className="flex flex-col relative min-h-screen">
       {isLoading && isHome ? (
         <SplashScreen finishLoading={() => setIsLoading(false)} />
       ) : (

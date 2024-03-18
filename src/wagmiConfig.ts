@@ -1,10 +1,14 @@
+import { injected } from "@wagmi/core";
+import { Chain, Client, Transport } from "viem";
 import { http, createConfig } from "wagmi";
 import { mainnet, optimismSepolia } from "wagmi/chains";
+// import { metaMask, walletConnect } from "wagmi/connectors";
 
 export const config = createConfig({
   chains: [mainnet, optimismSepolia],
   connectors: [
-    // walletConnect({ projectId: import.meta.env.VITE_WC_PROJECT_ID }),
+    injected({}),
+    // walletConnect({}),
   ],
   transports: {
     [mainnet.id]: http(),

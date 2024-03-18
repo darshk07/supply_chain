@@ -6,6 +6,7 @@ import { disconnect } from "@wagmi/core";
 import { useConnect, useAccountEffect } from "wagmi";
 import { config } from "../wagmiConfig";
 import Loading from "./Loading";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const { address, isConnected: isc } = useAccount();
@@ -17,6 +18,7 @@ const Navbar = () => {
     5
   );
 
+  const navigate = useNavigate();
   const handleLogout = async () => {
     await disconnect(config);
   };
@@ -38,12 +40,24 @@ const Navbar = () => {
   });
 
   return (
-    <div className="bg-black flex justify-between items-center h-20 w-screen mx-auto px-4 text-white">
+    <div className="bg-black flex justify-between items-center h-20 w-full mx-auto px-4 text-white">
       {/* {isLoading ? <Loading /> : null} */}
-      <h1 className="p-5 text-3xl font-bold text-[#00df9a]">D-ERP</h1>
-
+      <h1
+        onClick={() => navigate("/")}
+        className="p-5 text-3xl font-bold text-[#00df9a] cursor-pointer"
+      >
+        D-ERP
+      </h1>
+      <div
+        onClick={() => {
+          navigate("/history");
+        }}
+        className="ml-auto mr-12"
+      >
+        Get Supply History
+      </div>
       {isConnected ? (
-        <div className="flex justify-center items-center ml-auto text-lg pr-0">
+        <div className="flex justify-center items-center text-lg pr-0">
           <div className="mr-2">
             <MdAccountBalanceWallet size={26} />
           </div>

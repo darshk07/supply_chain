@@ -2,7 +2,10 @@ import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { contractConfig } from "../config/contractConfig";
 import Loading from "../components/Loading";
 import { useState } from "react";
-import { PiFolderNotchOpenFill } from "react-icons/pi";
+import { watchContractEvent } from "@wagmi/core";
+import { config } from "../wagmiConfig";
+import Manufacturer from "../components/Manufacturer";
+import Distributor from "../components/Distributor";
 
 const Home = () => {
   const { address } = useAccount();
@@ -19,8 +22,7 @@ const Home = () => {
   const [accountAddress, setAccountAddress] = useState<string>("");
   const [role, setRole] = useState<string>("");
   const { writeContract, error } = useWriteContract();
-  // console.log(fetchedRole);
-  // console.log(error);
+
   const handleRemoveRole = () => {
     writeContract({
       ...contractConfig,
@@ -41,47 +43,76 @@ const Home = () => {
     setRole("");
   };
 
+  watchContractEvent(config, {
+    ...contractConfig,
+    eventName: "RoleAssigned",
+    onLogs(logs: any) {
+      console.log("New logs!", logs);
+      if (logs[0]?.args?.addr === address) {
+        window.location.reload();
+      }
+    },
+  });
+
   if (isFetching) {
     return <Loading />;
   }
 
   if (fetchedRole === "Admin") {
     return (
-      <div>
-        <div className="">
-          <h2>Add role</h2>
-          <label htmlFor="address">
-            <input
-              name="address"
-              type="text"
-              onChange={(e) => {
-                setAccountAddress(e.target.value);
-              }}
-            />
-          </label>
-          <label htmlFor="role">
-            <input
-              name="role"
-              type="text"
-              onChange={(e) => {
-                setRole(e.target.value);
-              }}
-            />
-          </label>
-          <button onClick={() => handleAddRole()}>Add Role</button>
-        </div>
-        <div className="">
-          <h2>Add role</h2>
-          <label htmlFor="address">
-            <input
-              name="address"
-              type="text"
-              onChange={(e) => {
-                setAccountAddress(e.target.value);
-              }}
-            />
-          </label>
-          <button onClick={handleRemoveRole}>Remove Role</button>
+      <div className="flex flex-col flex-1 items-center justify-center gap-4">
+        <h2 className="font-semibold text-2xl">Your Role: {fetchedRole}</h2>
+        <div className="p-8 bg-[#f5f5f5] rounded-md flex flex-col gap-8">
+          <div className="flex items-start gap-4 flex-col">
+            <h2 className="text-2xl">Add role</h2>
+            <div className="flex gap-4">
+              <label htmlFor="address">
+                <input
+                  className="border-2 border-black rounded-md"
+                  name="address"
+                  type="text"
+                  onChange={(e) => {
+                    setAccountAddress(e.target.value);
+                  }}
+                />
+              </label>
+              <label htmlFor="role">
+                <input
+                  className="border-2 border-black rounded-md"
+                  name="role"
+                  type="text"
+                  onChange={(e) => {
+                    setRole(e.target.value);
+                  }}
+                />
+              </label>
+            </div>
+            <button
+              className="px-6 py-2 rounded-md bg-[#fff]"
+              onClick={() => handleAddRole()}
+            >
+              Add Role
+            </button>
+          </div>
+          <div className="flex items-start gap-4 flex-col">
+            <h2 className="text-2xl">Remove role</h2>
+            <label htmlFor="address">
+              <input
+                className="border-2 border-black rounded-md"
+                name="address"
+                type="text"
+                onChange={(e) => {
+                  setAccountAddress(e.target.value);
+                }}
+              />
+            </label>
+            <button
+              className="px-6 py-2 rounded-md bg-[#fff]"
+              onClick={handleRemoveRole}
+            >
+              Remove Role
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -97,7 +128,16 @@ const Home = () => {
       </div>
     );
   }
-  return <div>Role assigned : {role}</div>;
+
+  if (fetchedRole === "Manufacturer") {
+    return <Manufacturer />;
+  }
+
+  if (fetchedRole === "Distributor") {
+    return <Distributor />;
+  }
+
+  return <div>Role assigned : {fetchedRole}</div>;
 };
 
 export default Home;

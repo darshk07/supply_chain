@@ -8,6 +8,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import RootLayout from "./pages/RootLayout";
 import Payable from "./components/Payable";
 import Home from "./pages/Home";
+import SupplyHistory from "./components/SupplyHistory";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,24 +23,22 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Payable />,
+        element: <Home />,
       },
       {
-        path: "/home",
-        element: <Home />,
+        path: "/history",
+        element: <SupplyHistory />,
       },
     ],
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        {/* <ReactQueryDevtools initialIsOpen={true} /> */}
-        <RouterProvider router={router} />
-        {/* <App /> */}
-      </QueryClientProvider>
-    </WagmiProvider>
-  </React.StrictMode>
+  <WagmiProvider config={config}>
+    <QueryClientProvider client={queryClient}>
+      {/* <ReactQueryDevtools initialIsOpen={true} /> */}
+      <RouterProvider router={router} />
+      {/* <App /> */}
+    </QueryClientProvider>
+  </WagmiProvider>
 );
