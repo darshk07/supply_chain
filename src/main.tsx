@@ -5,9 +5,9 @@ import { WagmiProvider } from "wagmi";
 import { config } from "./wagmiConfig.js";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import RootLayout from "./pages/RootLayout.js";
-import Payable from "./components/Payable.js";
-import Home from "./pages/home.js";
+import RootLayout from "./pages/RootLayout";
+import Payable from "./components/Payable";
+import Home from "./pages/Home";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,8 +15,7 @@ const queryClient = new QueryClient({
   },
 });
 
-
- const router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
@@ -32,7 +31,6 @@ const queryClient = new QueryClient({
     ],
   },
 ]);
-
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

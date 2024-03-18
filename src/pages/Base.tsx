@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAccount, useAccountEffect } from "wagmi";
 
 function PRELOGIN() {
+
+
   return (
     <div className="bg-gray-100 flex-1 w-screen justify-center">
       <center className="mt-1 m-auto pt-10">

@@ -3,13 +3,23 @@ import Navbar from "../components/Navbar";
 import { Outlet } from "react-router";
 import PRELOGIN from "./Base";
 import { useAccount } from "wagmi";
-import SplashScreen from "./splash";
+import SplashScreen from "./SplashScreen";
+import { useNavigate } from "react-router-dom";
 
 const RootLayout = () => {
   const { isConnected } = useAccount();
   const [pathname, setPathname] = useState(window.location.pathname);
   const isHome = pathname === "/";
   const [isLoading, setIsLoading] = useState(isHome);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("isConnected", isConnected);
+    if (isConnected) {
+      console.log("Connected");
+      navigate("/home");
+    }
+  }, []);
 
   // Update pathname on navigation
   useEffect(() => {
