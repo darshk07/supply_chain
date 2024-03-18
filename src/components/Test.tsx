@@ -1,9 +1,9 @@
 import {
   useReadContract,
   useWriteContract,
-  useWaitForTransactionReceipt,
   useWatchContractEvent,
 } from "wagmi";
+import React from "react";
 import { contractConfig } from "../config/contractConfig";
 
 const Test = () => {
@@ -36,13 +36,6 @@ const Test = () => {
       args: ["kedar"],
     });
   };
-
-  useWaitForTransactionReceipt({
-    ...contractConfig,
-    onTransactionReceipt(receipt) {
-      console.log("Transaction Receipt", receipt);
-    },
-  });
 
   return (
     <div>

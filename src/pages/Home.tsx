@@ -7,8 +7,9 @@ import {
   useEnsName,
 } from "wagmi";
 import { config } from "../wagmiConfig";
-import Test from "../components/Test";
 import Payable from "../components/Payable";
+import Loading from "../components/Loading";
+import React from 'react'
 
 const Home = () => {
   const { address } = useAccount({});
@@ -36,7 +37,6 @@ const Home = () => {
       <button onClick={() => disconnect()}>Disconnect</button>
       {/* <Test /> */}
       <Payable />
-
     </div>
   );
 };
