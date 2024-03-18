@@ -2,16 +2,26 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { Outlet } from "react-router";
 import PRELOGIN from "./Base";
-import { useAccount } from "wagmi";
+import { useAccount, useAccountEffect } from "wagmi";
 import SplashScreen from "./SplashScreen";
 import { useNavigate } from "react-router-dom";
 
 const RootLayout = () => {
-  const { isConnected } = useAccount();
   const [pathname, setPathname] = useState(window.location.pathname);
   const isHome = pathname === "/";
   const [isLoading, setIsLoading] = useState(isHome);
   const navigate = useNavigate();
+  const [isConnected, setIsConnected] = useState(false);
+
+  useAccountEffect({
+    onConnect() {
+      setIsConnected(true);
+    },
+    onDisconnect() {
+      setIsConnected(false);
+      console.log("Disconnected");
+    },
+  });
 
   useEffect(() => {
     console.log("isConnected", isConnected);
@@ -19,7 +29,11 @@ const RootLayout = () => {
       console.log("Connected");
       navigate("/home");
     }
-  }, []);
+    if (!isConnected) {
+      console.log("Not connected");
+      navigate("/");
+    }
+  }, [isConnected]);
 
   // Update pathname on navigation
   useEffect(() => {
