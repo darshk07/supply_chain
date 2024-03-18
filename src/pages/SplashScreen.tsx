@@ -57,7 +57,7 @@ const SplashScreen = ({ finishLoading }) => {
       className="flex h-screen items-center justify-center bg-black"
       // ismounted={isMounted}
     >
-      <h1 id="logo" className="font-bold text-[#00df9a] text-7xl">
+      <h1 id="logo" className="font-bold text-[#FFE900] text-7xl">
         D-ERP
       </h1>
     </div>
