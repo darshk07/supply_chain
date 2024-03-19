@@ -1,22 +1,9 @@
 import React from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import { Autoplay } from "swiper/modules";
-import { FreeMode, Pagination } from "swiper/modules";
-import gola from "../photos/gola.png"; // Assuming this is a placeholder image
-
+import { ChevronLeft, ChevronRight } from "react-feather";
+import Carousel from "./Carousel"; // Assuming Carousel is imported correctly
+import gola from "../photos/gola.png";
 
 const NoRoleAssigned = () => {
-  // Create sample slide data (replace with your actual data)
-  const slideData = [
-    {
-      imageUrl: gola, // Replace with your image URL
-      title: "Slide Title 1",
-      description: "Slide Description 1",
-    },
-    // Add more slide objects as needed
-  ];
-
   return (
     <div
       style={{ backgroundImage: "url(/bg-2.jpg)" }}
@@ -31,11 +18,18 @@ const NoRoleAssigned = () => {
             </span>
           </h1>
           <p className="text-gray-400 text-[20px]">Contact Admin</p>
-          <p className="text-gray-200 text-[20px] pt-10 font-bold">Our Services</p>
+          <p className="text-gray-200 text-[20px] pt-5 font-bold">
+            Our Services
+          </p>
+        </div>
+
+        {/* Carousel container with margin for spacing */}
+        <div>
+          {" "}
+          {/* Added margin-top for spacing */}
+          <Carousel />
         </div>
       </div>
-
-      
     </div>
   );
 };
