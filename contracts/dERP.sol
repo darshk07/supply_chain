@@ -126,7 +126,15 @@ contract dERP{
     }
 
     //manufacturer ships the product
-    function shippedFromManufacturer(uint productId) public onlyManufacturer(msg.sender){
+    modifier checkForPaymentByDistributor(string memory status){
+        require(keccak256(abi.encodePacked(status)) == keccak256(abi.encodePacked("Paid by Distributor to Manufacturer")), "Let the distributor pay first, then ship the product");
+        _;
+    }
+
+    function shippedFromManufacturer(uint productId) public 
+        onlyManufacturer(msg.sender) 
+        checkForPaymentByDistributor(products[productId].status)
+    {
         products[productId].status = "Shipped from Manufacturer";
         products[productId].time=block.timestamp;
         supplyHistory[productId].push(products[productId]);
@@ -134,7 +142,15 @@ contract dERP{
     }
 
     //distributor receives the product
-    function ReceivedToDistributor(uint productId) public onlyDistributor(msg.sender){
+    modifier checkForShipmentByManufacturer(string memory status){
+        require(keccak256(abi.encodePacked(status)) == keccak256(abi.encodePacked("Shipped from Manufacturer")), "Let the manufacturer ship the product");
+        _;
+    }
+
+    function ReceivedToDistributor(uint productId) public 
+        onlyDistributor(msg.sender)
+        checkForShipmentByManufacturer(products[productId].status)
+    {
         products[productId].status = "Received To Distributor";
         products[productId].time=block.timestamp;
         supplyHistory[productId].push(products[productId]);
@@ -142,7 +158,15 @@ contract dERP{
     }
 
     //distributor sells product to the retailer for a higher price
-    function onSaleByDistributor(uint256 productId, uint256 _money) public onlyDistributor(msg.sender){
+    modifier checkForReceiveOfProduct(string memory status){
+        require(keccak256(abi.encodePacked(status)) == keccak256(abi.encodePacked("Received To Distributor")), "Product has not been received, you cannot put the product on sale");
+        _;
+    }
+
+    function onSaleByDistributor(uint256 productId, uint256 _money) public 
+        onlyDistributor(msg.sender)
+        checkForReceiveOfProduct(products[productId].status)
+    {
         products[productId].status = "On Sale by Distributor";
         products[productId].money=_money;
         products[productId].time=block.timestamp;
@@ -151,9 +175,15 @@ contract dERP{
     }
 
     //retailer pays for the price
+    modifier checkForSaleByDistributor(string memory status){
+        require(keccak256(abi.encodePacked(status)) == keccak256(abi.encodePacked("On Sale by Distributor")), "Product is not on sale yet, please wait");
+        _;
+    }
+
     function PayByRetailer(uint256 productId, address payable _distributor) public payable
         onlyRetailer(msg.sender) 
         checkPayment(msg.value, products[productId].money)
+        checkForSaleByDistributor(products[productId].status)
     {
         products[productId].retailer=msg.sender;
         products[productId].status = "Paid by Retailer to Distributor";
@@ -165,7 +195,15 @@ contract dERP{
     }
 
     //distributor ships the product
-    function shippedFromDistributor(uint productId) public onlyDistributor(msg.sender){
+    modifier checkForPaidByRetailer(string memory status){
+        require(keccak256(abi.encodePacked(status)) == keccak256(abi.encodePacked("Paid by Retailer to Distributor")), "Let the product be paid by the retailer");
+        _;
+    }
+
+    function shippedFromDistributor(uint productId) public 
+        onlyDistributor(msg.sender)
+        checkForPaidByRetailer(products[productId].status)
+    {
         products[productId].status = "Shipped from Distributor";
         products[productId].time=block.timestamp;
         supplyHistory[productId].push(products[productId]);
@@ -173,7 +211,15 @@ contract dERP{
     }
 
     //retailer receives the product
-    function ReceivedToRetailer(uint productId) public onlyRetailer(msg.sender){
+    modifier checkForShippedByDistributor(string memory status){
+        require(keccak256(abi.encodePacked(status)) == keccak256(abi.encodePacked("Shipped from Distributor")), "Distributor has not shipped the product yet");
+        _;
+    }
+
+    function ReceivedToRetailer(uint productId) public 
+        onlyRetailer(msg.sender)
+        checkForShippedByDistributor(products[productId].status)
+    {
         products[productId].status = "Received To Retailer";
         products[productId].time=block.timestamp;
         supplyHistory[productId].push(products[productId]);
@@ -255,7 +301,27 @@ contract dERP{
                 cnt++;
             }
         }
+        return allProducts;
+    }
 
+    //display all products of distributor to only retailer
+    function allProductsOfDistributor() public view onlyRetailer(msg.sender) returns(Product[] memory){
+        uint cnt=0;
+        for(uint i=1; i<productCount; i++){
+            if(products[i].manufacturer == address(0)) continue;
+            if(keccak256(abi.encodePacked(products[i].status)) == keccak256(abi.encodePacked("On Sale by Distributor"))){
+                cnt++;
+            }
+        }
+        Product[] memory allProducts = new Product[](cnt);
+        cnt=0;
+        for(uint i=1; i<productCount; i++){
+            if(products[i].manufacturer == address(0)) continue;
+            if(keccak256(abi.encodePacked(products[i].status)) == keccak256(abi.encodePacked("On Sale by Distributor"))){
+                allProducts[cnt]=products[i];
+                cnt++;
+            }
+        }
         return allProducts;
     }
 
