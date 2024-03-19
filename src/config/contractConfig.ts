@@ -5,6 +5,6 @@ export const contractConfig: {
   address: Address;
   abi: Abi;
 } = {
-  address: "0xF47B69B00C64d5849bB9117C77a8677e42db71aB",
+  address: "0x7bFEf130acF01eed11FdA2C21B891932DbcDDE07",
   abi: abi,
 };

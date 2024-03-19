@@ -124,6 +124,30 @@ export const abi: Abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "allProductsOfManufacturer",
+    outputs: [
+      {
+        components: [
+          { internalType: "address", name: "manufacturer", type: "address" },
+          { internalType: "address", name: "distributor", type: "address" },
+          { internalType: "address", name: "retailer", type: "address" },
+          { internalType: "string", name: "productName", type: "string" },
+          { internalType: "uint256", name: "productAmount", type: "uint256" },
+          { internalType: "uint256", name: "productId", type: "uint256" },
+          { internalType: "string", name: "status", type: "string" },
+          { internalType: "uint256", name: "money", type: "uint256" },
+          { internalType: "uint256", name: "time", type: "uint256" },
+        ],
+        internalType: "struct dERP.Product[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       { internalType: "string", name: "_name", type: "string" },
       { internalType: "uint256", name: "_money", type: "uint256" },
@@ -162,6 +186,33 @@ export const abi: Abi = [
     inputs: [],
     name: "getRole",
     outputs: [{ internalType: "string", name: "", type: "string" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "_addr", type: "address" },
+      { internalType: "string", name: "_role", type: "string" },
+    ],
+    name: "getStatusOfAllProducts",
+    outputs: [
+      {
+        components: [
+          { internalType: "address", name: "manufacturer", type: "address" },
+          { internalType: "address", name: "distributor", type: "address" },
+          { internalType: "address", name: "retailer", type: "address" },
+          { internalType: "string", name: "productName", type: "string" },
+          { internalType: "uint256", name: "productAmount", type: "uint256" },
+          { internalType: "uint256", name: "productId", type: "uint256" },
+          { internalType: "string", name: "status", type: "string" },
+          { internalType: "uint256", name: "money", type: "uint256" },
+          { internalType: "uint256", name: "time", type: "uint256" },
+        ],
+        internalType: "struct dERP.Product[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },

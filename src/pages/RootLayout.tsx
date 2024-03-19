@@ -50,7 +50,7 @@ const RootLayout = () => {
   }, [isLoading]);
 
   return (
-    <div className="flex flex-col relative min-h-screen">
+    <div className="flex flex-col relative min-h-screen ">
       {isLoading && isHome ? (
         <SplashScreen finishLoading={() => setIsLoading(false)} />
       ) : (

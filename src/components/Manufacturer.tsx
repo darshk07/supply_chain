@@ -1,8 +1,10 @@
-import { Button, Modal } from "antd";
-import React, { useState } from "react";
+import { Button, Modal, Table, Tag } from "antd";
+import React, { useEffect, useState } from "react";
 import { contractConfig } from "../config/contractConfig";
-import { useWriteContract } from "wagmi";
-import { parseEther } from "viem";
+import { useAccount, useWriteContract } from "wagmi";
+import { formatEther, parseEther, parseGwei } from "viem";
+import { readContract, watchContractEvent } from "@wagmi/core";
+import { config } from "../wagmiConfig";
 
 type Props = {};
 
@@ -13,10 +15,49 @@ type Product = {
 };
 
 function Manufacturer({}: Props) {
+  const { address } = useAccount();
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [newProduct, setNewProduct] = useState<Product | null>(null);
   const { writeContract, error } = useWriteContract();
-  console.log(error);
+  const [myProducts, setMyProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+
+  const getProducts = async () => {
+    const pro: any[] = await readContract(config, {
+      ...contractConfig,
+      functionName: "getStatusOfAllProducts",
+      account: address,
+      args: [address, "Manufacturer"],
+    });
+    console.log(pro);
+    setMyProducts(pro);
+  };
+
+  watchContractEvent(config, {
+    ...contractConfig,
+    eventName: "OnSale",
+    onLogs(logs: any) {
+      console.log("New logs!", logs);
+      if (logs[0]?.args?.addr === address) {
+        getProducts();
+      }
+    },
+  });
+
+  watchContractEvent(config, {
+    ...contractConfig,
+    eventName: "Paid",
+    onLogs(logs: any) {
+      console.log("New logs!", logs);
+      if (logs[0]?.args?.addr === address) {
+        getProducts();
+      }
+    },
+  });
+
   const handleAddProduct = () => {
     writeContract({
       ...contractConfig,
@@ -67,6 +108,75 @@ function Manufacturer({}: Props) {
     );
   };
 
+  const handleProductShip = async (row) => {
+    writeContract({
+      ...contractConfig,
+      functionName: "createProduct",
+      args: [
+        newProduct?.name,
+        parseEther(
+          ((newProduct?.price || 1) * (newProduct?.quantity || 1)).toString()
+        ),
+        newProduct?.quantity,
+      ],
+    });
+  };
+
+  const columns = [
+    {
+      title: "Product Name",
+      dataIndex: "productName",
+      key: "name",
+    },
+    {
+      title: "Amount",
+      dataIndex: "money",
+      key: "amount",
+      render: (text: any) => {
+        return <div>{formatEther(text)} </div>;
+      },
+    },
+    {
+      title: "Quantity",
+      dataIndex: "productAmount",
+      key: "quantity",
+      render: (text: any) => <div>{text.toString()}</div>,
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (text: string) => <Tag className="">{text}</Tag>,
+    },
+    {
+      title: "Time",
+      dataIndex: "time",
+      key: "time",
+      render: (text: BigInt) => {
+        let newDate = new Date(0);
+        newDate.setUTCSeconds(Number(text));
+        return <div>{newDate.toISOString()}</div>;
+      },
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (text, row) => {
+        if (row.status === "Paid by Distributor to Manufacturer")
+          return (
+            <Button
+              onClick={() => {
+                handleProductShip(row);
+              }}
+              type="dashed"
+            >
+              Ship
+            </Button>
+          );
+      },
+    },
+  ];
+
   return (
     <div className="flex-1 flex justify-start flex-col px-16 py-8 gap-8 ">
       <Modal
@@ -93,7 +203,9 @@ function Manufacturer({}: Props) {
       </div>
       <div className="flex gap-4 flex-col">
         <div className="text-xl">Your Products</div>
-        <div className="h-[600px] border-2 rounded-md border-black p-6"> </div>
+        <div className="h-[600px] border-2 rounded-md border-black p-6">
+          <Table columns={columns} dataSource={myProducts} />
+        </div>
       </div>
     </div>
   );
