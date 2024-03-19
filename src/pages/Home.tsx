@@ -6,6 +6,8 @@ import { watchContractEvent } from "@wagmi/core";
 import { config } from "../wagmiConfig";
 import Manufacturer from "../components/Manufacturer";
 import Distributor from "../components/Distributor";
+import Retailer from "../components/Retailer";
+import NoRoleAssigned from "../components/NoRoleAssigned";
 
 const Home = () => {
   const { address } = useAccount();
@@ -64,7 +66,9 @@ const Home = () => {
         <h2 className="font-semibold text-5xl mb-4">Hello, {fetchedRole}!</h2>
         <div className="p-12 bg-[#575353] rounded-xl flex flex-col gap-8 w-2/5">
           <div className="flex items-start gap-4 flex-col">
-            <h2 className="text-2xl w-full flex justify-center border-b border-white pb-2">Add role</h2>
+            <h2 className="text-2xl w-full flex justify-center border-b border-white pb-2">
+              Add role
+            </h2>
             <div className="flex gap-4 w-full">
               <label htmlFor="address">
                 <input
@@ -85,12 +89,17 @@ const Home = () => {
                     setRole(e.target.value);
                   }}
                 >
-                  <option value="Manufacturer" className="text-black">Manufacturer</option>
-                  <option value="Distributor" className="text-black">Distributor</option>
-                  <option value="Retailer" className="text-black">Retailer</option>
+                  <option value="Manufacturer" className="text-black">
+                    Manufacturer
+                  </option>
+                  <option value="Distributor" className="text-black">
+                    Distributor
+                  </option>
+                  <option value="Retailer" className="text-black">
+                    Retailer
+                  </option>
                 </select>
               </label>
-
             </div>
             <button
               className="px-6 py-2 rounded-md bg-primary p-1 text-black"
@@ -100,7 +109,9 @@ const Home = () => {
             </button>
           </div>
           <div className="flex items-start gap-4 flex-col">
-          <h2 className="text-2xl w-full flex justify-center border-b border-white pb-2">Remove role</h2>
+            <h2 className="text-2xl w-full flex justify-center border-b border-white pb-2">
+              Remove role
+            </h2>
             <label htmlFor="address">
               <input
                 className="border-2 border-black text-black rounded-md p-1 focus:outline-none w-[520px]"
@@ -124,14 +135,7 @@ const Home = () => {
   }
 
   if (fetchedRole === "None") {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="flex gap-2 flex-col">
-          <div className="text-4xl">No Role Assigned</div>
-          <div className="text-center">Contact Admin for the role.</div>
-        </div>
-      </div>
-    );
+    return <NoRoleAssigned />;
   }
 
   if (fetchedRole === "Manufacturer") {
@@ -140,6 +144,10 @@ const Home = () => {
 
   if (fetchedRole === "Distributor") {
     return <Distributor />;
+  }
+
+  if (fetchedRole === "Retailer") {
+    return <Retailer />;
   }
 
   return <div>Role assigned : {fetchedRole}</div>;

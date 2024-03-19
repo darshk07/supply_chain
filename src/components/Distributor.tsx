@@ -1,10 +1,11 @@
-import { Button, Modal, Table, Tag } from "antd";
+import { Button, Input, Modal, Table, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import { contractConfig } from "../config/contractConfig";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useWatchContractEvent, useWriteContract } from "wagmi";
 import { readContract, watchContractEvent } from "@wagmi/core";
 import { config } from "../wagmiConfig";
 import { formatEther, parseEther } from "viem";
+import { convertUnixTimestampToDateTime } from "./SupplyHistory";
 
 type Props = {};
 
@@ -15,13 +16,12 @@ type Product = {
 };
 
 function Distributor({}: Props) {
-  const [isAdding, setIsAdding] = useState<boolean>(false);
-  const [newProduct, setNewProduct] = useState<Product | null>(null);
-  const { writeContract, error } = useWriteContract();
+  const { writeContract, error, isPending } = useWriteContract();
   const [saleProducts, setSaleProducts] = useState<any[]>([]);
   const [myProducts, setMyProducts] = useState<any[]>([]);
   const { address } = useAccount();
-  console.log(error);
+  const [sellProductPrice, setSellProductPrice] = useState<number>("");
+
   useEffect(() => {
     getSaleProducts();
     getMyProducts();
@@ -33,8 +33,25 @@ function Distributor({}: Props) {
       functionName: "allProductsOfManufacturer",
       account: address,
     });
-    console.log(pro);
     setSaleProducts(pro);
+  };
+
+  const handleReceive = async (row) => {
+    writeContract(
+      {
+        ...contractConfig,
+        functionName: "ReceivedToDistributor",
+        args: [row.productId],
+      },
+      {
+        onSuccess: async () => {
+          await getMyProducts();
+        },
+        onError: (er) => {
+          console.log(er);
+        },
+      }
+    );
   };
 
   const getMyProducts = async () => {
@@ -44,64 +61,69 @@ function Distributor({}: Props) {
       account: address,
       args: [address, "Distributor"],
     });
-    console.log(pro);
     setMyProducts(pro);
   };
 
-  watchContractEvent(config, {
+  useWatchContractEvent({
     ...contractConfig,
     eventName: "OnSale",
     onLogs(logs: any) {
       console.log("New logs!", logs);
-      if (logs[0]?.args?.addr === address) {
-        getSaleProducts();
-      }
+      getSaleProducts();
+      getMyProducts();
     },
   });
-  // const renderAddProductModal = () => {
-  //   return (
-  //     <div className="flex flex-col gap-8">
-  //       <div className="text-2xl">Add Product</div>
-  //       <div className="flex flex-col gap-4">
-  //         <input
-  //           onChange={(e) =>
-  //             setNewProduct({ ...newProduct, name: e.target.value })
-  //           }
-  //           type="text"
-  //           placeholder="Product Name"
-  //           className="border-2 rounded-md p-2"
-  //         />
-  //         <input
-  //           onChange={(e) =>
-  //             setNewProduct({ ...newProduct, price: e.target.value })
-  //           }
-  //           type="number"
-  //           placeholder="Product Price"
-  //           className="border-2 rounded-md p-2"
-  //         />
-  //         <input
-  //           onChange={(e) =>
-  //             setNewProduct({ ...newProduct, quantity: e.target.value })
-  //           }
-  //           type="number"
-  //           placeholder="Product Quantity"
-  //           className="border-2 rounded-md p-2"
-  //         />
-  //       </div>
-  //     </div>
-  //   );
-  // };
+
+  useWatchContractEvent({
+    ...contractConfig,
+    eventName: "Shipped",
+    onLogs(logs: any) {
+      console.log("New logs!", logs);
+      getMyProducts();
+    },
+  });
+  useWatchContractEvent({
+    ...contractConfig,
+    eventName: "Received",
+    onLogs(logs: any) {
+      console.log("New logs!", logs);
+      getMyProducts();
+    },
+  });
+
+  useWatchContractEvent({
+    ...contractConfig,
+    eventName: "Paid",
+    onLogs(logs: any) {
+      console.log("New logs!", logs);
+      getSaleProducts();
+      getMyProducts();
+    },
+  });
 
   const handlePay = (row) => {
-    console.log(row);
-    writeContract({
-      ...contractConfig,
-      functionName: "PayByDistributor",
-      args: [row.productId, row.manufacturer],
-      value: row.money.toString(),
-    });
+    writeContract(
+      {
+        ...contractConfig,
+        functionName: "PayByDistributor",
+        args: [row.productId, row.manufacturer],
+        value: row.money.toString(),
+      },
+      {
+        onSuccess: async () => {
+          console.log("Successfully paid");
+          await getMyProducts();
+        },
+      }
+    );
   };
   const saleColumns = [
+    {
+      title: "Product Id",
+      dataIndex: "productId",
+      key: "productId",
+      render: (text: any) => <div>{text.toString()}</div>,
+    },
     {
       title: "Product Name",
       dataIndex: "productName",
@@ -125,16 +147,25 @@ function Distributor({}: Props) {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (text: string) => <Tag className="">{text}</Tag>,
+      render: (text: string, row) => {
+        let color = row.status.includes("Received")
+          ? "green"
+          : row.status.includes("Paid")
+          ? "blue"
+          : row.status.includes("Sale")
+          ? "red"
+          : row.status.includes("Shipped")
+          ? "yellow"
+          : "default";
+        return <Tag color={color}>{text}</Tag>;
+      },
     },
     {
       title: "Time",
       dataIndex: "time",
       key: "time",
-      render: (text: BigInt) => {
-        let newDate = new Date(0);
-        newDate.setUTCSeconds(Number(text));
-        return <div>{newDate.toISOString()}</div>;
+      render: (text: BigInt, row) => {
+        return <div>{convertUnixTimestampToDateTime(Number(text))}</div>;
       },
     },
     {
@@ -143,7 +174,7 @@ function Distributor({}: Props) {
       render: (text, row) => (
         <div>
           <Button
-            type="text"
+            type="dashed"
             onClick={() => {
               handlePay(row);
             }}
@@ -155,7 +186,73 @@ function Distributor({}: Props) {
     },
   ];
 
+  const modalContent = (row) => {
+    let price = 0;
+    console.log(price);
+    return (
+      <div className="flex flex-col gap-8">
+        <div>
+          <h3 className="font-semibold">
+            Enter price for which you want to sell?
+          </h3>
+          <div>
+            Bought Price : {formatEther(row.money.toString()).toString()} ETH
+          </div>
+          <Input
+            size="large"
+            allowClear
+            placeholder="Enter price"
+            type="number"
+            suffix="ETH"
+            onChange={(e: any) => (price = e.target.value)}
+          />
+        </div>
+        <Button onClick={() => handleSell(row, price)}>Sell</Button>
+      </div>
+    );
+  };
+
+  const handleShip = (row) => {
+    writeContract(
+      {
+        ...contractConfig,
+        functionName: "shippedFromDistributor",
+        args: [row.productId],
+      },
+      {
+        onSuccess: async () => {
+          await getMyProducts();
+        },
+        onError: (er) => {
+          console.log(er);
+        },
+      }
+    );
+  };
+
+  const handleSell = (row, price) => {
+    console.log("Sell", price);
+    writeContract(
+      {
+        ...contractConfig,
+        functionName: "onSaleByDistributor",
+        args: [row.productId, parseEther(price)],
+      },
+      {
+        onSuccess: () => {
+          getMyProducts();
+        },
+      }
+    );
+  };
+
   const columns = [
+    {
+      title: "Product Id",
+      dataIndex: "productId",
+      key: "productId",
+      render: (text: any) => <div>{text.toString()}</div>,
+    },
     {
       title: "Product Name",
       dataIndex: "productName",
@@ -179,67 +276,105 @@ function Distributor({}: Props) {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (text: string) => <Tag className="">{text}</Tag>,
+      render: (text: string, row) => {
+        let color = row.status.includes("Received")
+          ? "green"
+          : row.status.includes("Paid")
+          ? "blue"
+          : row.status.includes("Sale")
+          ? "red"
+          : row.status.includes("Shipped")
+          ? "yellow"
+          : "default";
+        return <Tag color={color}>{text}</Tag>;
+      },
     },
     {
       title: "Time",
       dataIndex: "time",
       key: "time",
-      render: (text: BigInt) => {
-        let newDate = new Date(0);
-        newDate.setUTCSeconds(Number(text));
-        return <div>{newDate.toISOString()}</div>;
+      render: (text: BigInt, row) => {
+        return <div>{convertUnixTimestampToDateTime(Number(text))}</div>;
       },
     },
-    // {
-    //   title: "Action",
-    //   key: "action",
-    //   render: (text, row) => (
-    //     <div>
-    //       <Button
-    //         type="text"
-    //         onClick={() => {
-    //           handlePay(row);
-    //         }}
-    //       >
-    //         Pay
-    //       </Button>
-    //     </div>
-    //   ),
-    // },
+    {
+      title: "Action",
+      key: "action",
+      render: (text, row) => {
+        if (row.status === "Shipped from Manufacturer")
+          return (
+            <div>
+              <Button
+                type="dashed"
+                onClick={() => {
+                  handleReceive(row);
+                }}
+              >
+                Mark as Received
+              </Button>
+            </div>
+          );
+
+        if (row.status === "Received To Distributor")
+          return (
+            <div>
+              <Button
+                type="dashed"
+                onClick={() => {
+                  Modal.confirm({
+                    maskClosable: true,
+                    title: "Do you want to sell this product?",
+                    content: modalContent(row),
+                    centered: true,
+                    cancelButtonProps: { style: { display: "none" } },
+                    okButtonProps: { style: { display: "none" } },
+                  });
+                }}
+              >
+                Sell
+              </Button>
+            </div>
+          );
+        if (row.status === "Paid by Retailer to Distributor") {
+          return <Button onClick={() => handleShip(row)}>Ship</Button>;
+        }
+      },
+    },
   ];
 
   return (
-    <div className="flex-1 flex justify-start flex-col px-16 py-8 gap-8 ">
-      {/* <Modal
-        centered
-        cancelButtonProps={{ hidden: true }}
-        okButtonProps={{ type: "text" }}
-        onOk={handleAddProduct}
-        okText="Add Product"
-        onCancel={() => setIsAdding(false)}
-        open={isAdding}
-      > */}
-      {/* {renderAddProductModal()} */}
-      {/* </Modal> */}
+    <div className="flex-1 flex justify-start flex-col px-16 py-8 gap-6 ">
       <div className="flex gap-2 items-center justify-between">
         <div className="flex flex-col items-start">
           <div className="text-4xl">Distributor</div>
           <div className="text-center">
-            You can add products and ship them to distributors.
+            You can buy products from manufacturers and sell it to your
+            retailers.
           </div>
         </div>
       </div>
       <div className="flex gap-4 flex-col">
         <div className="text-xl">Products on Sale</div>
-        <div className="h-[600px] border-2 rounded-md border-black p-6">
-          <Table columns={saleColumns} dataSource={saleProducts} />
+        <div className="rounded-md">
+          <Table
+            bordered
+            loading={isPending}
+            columns={saleColumns}
+            pagination={false}
+            dataSource={saleProducts}
+          />
         </div>
       </div>
       <div className="flex gap-4 flex-col">
-        <div className="text-xl">2nd category</div>
-        <div className="h-[600px] border-2 rounded-md border-black p-6">
-          <Table columns={columns} dataSource={myProducts} />
+        <div className="text-xl">Your Products</div>
+        <div className="rounded-md">
+          <Table
+            bordered
+            loading={isPending}
+            columns={columns}
+            pagination={false}
+            dataSource={myProducts}
+          />
         </div>
       </div>
     </div>

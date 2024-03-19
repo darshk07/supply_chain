@@ -125,6 +125,30 @@ export const abi: Abi = [
   },
   {
     inputs: [],
+    name: "allProductsOfDistributor",
+    outputs: [
+      {
+        components: [
+          { internalType: "address", name: "manufacturer", type: "address" },
+          { internalType: "address", name: "distributor", type: "address" },
+          { internalType: "address", name: "retailer", type: "address" },
+          { internalType: "string", name: "productName", type: "string" },
+          { internalType: "uint256", name: "productAmount", type: "uint256" },
+          { internalType: "uint256", name: "productId", type: "uint256" },
+          { internalType: "string", name: "status", type: "string" },
+          { internalType: "uint256", name: "money", type: "uint256" },
+          { internalType: "uint256", name: "time", type: "uint256" },
+        ],
+        internalType: "struct dERP.Product[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "allProductsOfManufacturer",
     outputs: [
       {
