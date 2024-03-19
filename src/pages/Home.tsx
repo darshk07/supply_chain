@@ -20,7 +20,7 @@ const Home = () => {
     functionName: "getRole",
     account: address,
   });
-
+  console.log(fetchedRole);
   const [accountAddress, setAccountAddress] = useState<string>("");
   const [role, setRole] = useState<string>("");
   const { writeContract, error } = useWriteContract();
@@ -36,6 +36,7 @@ const Home = () => {
   };
 
   const handleAddRole = () => {
+    console.log(role, accountAddress);
     writeContract({
       ...contractConfig,
       functionName: "addRole",
@@ -55,6 +56,7 @@ const Home = () => {
       }
     },
   });
+  console.log(role);
 
   if (isFetching) {
     return <Loading />;
@@ -81,15 +83,15 @@ const Home = () => {
                 />
               </label>
               <label htmlFor="role">
-                <select
+                <input
                   className="border-2 border-black rounded-md p-1 text-black focus:outline-none w-[150px]"
                   name="role"
                   id="role"
                   onChange={(e) => {
                     setRole(e.target.value);
                   }}
-                >
-                  <option value="Manufacturer" className="text-black">
+                />
+                {/* <option value="Manufacturer" className="text-black">
                     Manufacturer
                   </option>
                   <option value="Distributor" className="text-black">
@@ -97,8 +99,8 @@ const Home = () => {
                   </option>
                   <option value="Retailer" className="text-black">
                     Retailer
-                  </option>
-                </select>
+                  </option> */}
+                {/* </input/> */}
               </label>
             </div>
             <button

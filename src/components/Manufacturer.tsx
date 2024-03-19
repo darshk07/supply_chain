@@ -162,6 +162,10 @@ function Manufacturer({}: Props) {
       title: "Product Name",
       dataIndex: "productName",
       key: "name",
+      render: (text) => {
+        if (text === "") return <span>Test5</span>;
+        return <span>{text} </span>;
+      },
     },
     {
       title: "Amount",
