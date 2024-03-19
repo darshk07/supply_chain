@@ -41,7 +41,7 @@ const Navbar = () => {
   });
 
   return (
-    <div className="bg-secondary flex justify-between items-center h-20 w-full mx-auto px-4 text-white">
+    <div className="bg-secondary flex justify-between items-center h-20 w-full mx-auto px-4 text-white border-b border-black">
       {/* {isLoading ? <Loading /> : null} */}
       <h1
         onClick={() => navigate("/")}
@@ -71,7 +71,7 @@ const Navbar = () => {
 
       <div
         onClick={isConnected ? handleLogout : handleLogin}
-        className="p-4 flex items-center gap-4 hover:bg-[#00df9a] rounded-xl cursor-pointer duration-300 hover:text-black m-20"
+        className="p-3 flex items-center gap-4 hover:bg-primary rounded-xl cursor-pointer duration-300 hover:text-black m-12"
       >
         <FaUser />
         {isConnected ? (

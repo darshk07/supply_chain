@@ -60,15 +60,15 @@ const Home = () => {
 
   if (fetchedRole === "Admin") {
     return (
-      <div className="flex flex-col flex-1 items-center justify-center gap-4">
-        <h2 className="font-semibold text-2xl">Your Role: {fetchedRole}</h2>
-        <div className="p-8 bg-[#f5f5f5] rounded-md flex flex-col gap-8">
+      <div className="flex flex-col flex-1 items-center justify-center gap-4 bg-secondary text-white">
+        <h2 className="font-semibold text-5xl mb-4">Hello, {fetchedRole}!</h2>
+        <div className="p-12 bg-[#575353] rounded-xl flex flex-col gap-8 w-2/5">
           <div className="flex items-start gap-4 flex-col">
-            <h2 className="text-2xl">Add role</h2>
-            <div className="flex gap-4">
+            <h2 className="text-2xl w-full flex justify-center border-b border-white pb-2">Add role</h2>
+            <div className="flex gap-4 w-full">
               <label htmlFor="address">
                 <input
-                  className="border-2 border-black rounded-md"
+                  className="border-2 border-black text-black rounded-md p-1 focus:outline-none w-[350px]"
                   name="address"
                   type="text"
                   onChange={(e) => {
@@ -77,28 +77,33 @@ const Home = () => {
                 />
               </label>
               <label htmlFor="role">
-                <input
-                  className="border-2 border-black rounded-md"
+                <select
+                  className="border-2 border-black rounded-md p-1 text-black focus:outline-none w-[150px]"
                   name="role"
-                  type="text"
+                  id="role"
                   onChange={(e) => {
                     setRole(e.target.value);
                   }}
-                />
+                >
+                  <option value="Manufacturer" className="text-black">Manufacturer</option>
+                  <option value="Distributor" className="text-black">Distributor</option>
+                  <option value="Retailer" className="text-black">Retailer</option>
+                </select>
               </label>
+
             </div>
             <button
-              className="px-6 py-2 rounded-md bg-[#fff]"
+              className="px-6 py-2 rounded-md bg-primary p-1 text-black"
               onClick={() => handleAddRole()}
             >
               Add Role
             </button>
           </div>
           <div className="flex items-start gap-4 flex-col">
-            <h2 className="text-2xl">Remove role</h2>
+          <h2 className="text-2xl w-full flex justify-center border-b border-white pb-2">Remove role</h2>
             <label htmlFor="address">
               <input
-                className="border-2 border-black rounded-md"
+                className="border-2 border-black text-black rounded-md p-1 focus:outline-none w-[520px]"
                 name="address"
                 type="text"
                 onChange={(e) => {
@@ -107,7 +112,7 @@ const Home = () => {
               />
             </label>
             <button
-              className="px-6 py-2 rounded-md bg-[#fff]"
+              className="px-6 py-2 rounded-md bg-primary text-black"
               onClick={handleRemoveRole}
             >
               Remove Role
