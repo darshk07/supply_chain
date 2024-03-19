@@ -12,6 +12,8 @@ export const config = createConfig({
   ],
   transports: {
     [mainnet.id]: http(),
-    [optimismSepolia.id]: http(),
+    [optimismSepolia.id]: http(
+      "https://opt-sepolia.g.alchemy.com/v2/jP854jxPIRUML99MGVRKNdfr-6ub1FlM"
+    ),
   },
 });
