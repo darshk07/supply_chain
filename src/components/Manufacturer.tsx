@@ -1,35 +1,33 @@
 import { Button, Input, Modal, Table, Tag } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { contractConfig } from "../config/contractConfig";
 import { useAccount, useWatchContractEvent, useWriteContract } from "wagmi";
-import { formatEther, parseEther, parseGwei } from "viem";
-import { readContract, watchContractEvent } from "@wagmi/core";
+import { formatEther, parseEther } from "viem";
+import { readContract } from "@wagmi/core";
 import { config } from "../wagmiConfig";
-import dayjs from "dayjs";
-import { GrEbay } from "react-icons/gr";
 import { convertUnixTimestampToDateTime } from "./SupplyHistory";
 
 type Props = {};
 
-type Product = {
-  name: string | null;
-  price: number | null;
-  quantity: number | null;
-};
+// type Product = {
+//   name: string | null;
+//   price: number | null;
+//   quantity: number | null;
+// };
 
 function Manufacturer({}: Props) {
   const { address } = useAccount();
   const [isAdding, setIsAdding] = useState<boolean>(false);
-  const [newProduct, setNewProduct] = useState<Product | null>(null);
-  const { writeContract, error } = useWriteContract();
-  const [myProducts, setMyProducts] = useState<any[]>([]);
+  const [newProduct, setNewProduct] = useState<any>(null);
+  const { writeContract } = useWriteContract();
+  const [myProducts, setMyProducts] = useState<any>([]);
 
   useEffect(() => {
     getProducts();
   }, []);
 
   const getProducts = async () => {
-    const pro: any[] = await readContract(config, {
+    const pro: any = await readContract(config, {
       ...contractConfig,
       functionName: "getStatusOfAllProducts",
       account: address,
@@ -77,25 +75,17 @@ function Manufacturer({}: Props) {
   });
 
   const handleAddProduct = () => {
-    writeContract(
-      {
-        ...contractConfig,
-        functionName: "createProduct",
-        args: [
-          newProduct?.name,
-          parseEther(
-            ((newProduct?.price || 1) * (newProduct?.quantity || 1)).toString()
-          ),
-          newProduct?.quantity,
-        ],
-      }
-      // {
-      //   onSuccess: async () => {
-      //     console.log("added");
-      //     await getProducts();
-      //   },
-      // }
-    );
+    writeContract({
+      ...contractConfig,
+      functionName: "createProduct",
+      args: [
+        newProduct?.name,
+        parseEther(
+          ((newProduct?.price || 1) * (newProduct?.quantity || 1)).toString()
+        ),
+        newProduct?.quantity,
+      ],
+    });
     setNewProduct(null);
     setIsAdding(false);
   };
@@ -135,7 +125,7 @@ function Manufacturer({}: Props) {
     );
   };
 
-  const handleProductShip = async (row) => {
+  const handleProductShip = async (row: any) => {
     writeContract(
       {
         ...contractConfig,
@@ -162,7 +152,7 @@ function Manufacturer({}: Props) {
       title: "Product Name",
       dataIndex: "productName",
       key: "name",
-      render: (text) => {
+      render: (text: string) => {
         if (text === "") return <span>Test5</span>;
         return <span>{text} </span>;
       },
@@ -185,7 +175,7 @@ function Manufacturer({}: Props) {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (text: string, row) => {
+      render: (text: string, row: any) => {
         let color = row.status.includes("Received")
           ? "green"
           : row.status.includes("Paid")
@@ -202,14 +192,14 @@ function Manufacturer({}: Props) {
       title: "Time",
       dataIndex: "time",
       key: "time",
-      render: (text: BigInt, row) => {
+      render: (text: BigInt) => {
         return <div>{convertUnixTimestampToDateTime(Number(text))}</div>;
       },
     },
     {
       title: "Actions",
       key: "actions",
-      render: (text, row) => {
+      render: (_: string, row: any) => {
         if (row.status === "Paid by Distributor to Manufacturer")
           return (
             <Button

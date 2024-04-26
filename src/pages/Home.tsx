@@ -13,7 +13,6 @@ const Home = () => {
   const { address } = useAccount();
   const {
     data: fetchedRole,
-    error: roleError,
     isLoading: isFetching,
   }: any = useReadContract({
     ...contractConfig,
@@ -23,7 +22,7 @@ const Home = () => {
   console.log(fetchedRole);
   const [accountAddress, setAccountAddress] = useState<string>("");
   const [role, setRole] = useState<string>("");
-  const { writeContract, error } = useWriteContract();
+  const { writeContract } = useWriteContract();
 
   const handleRemoveRole = () => {
     writeContract({

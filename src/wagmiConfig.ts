@@ -1,5 +1,4 @@
 import { injected } from "@wagmi/core";
-import { Chain, Client, Transport } from "viem";
 import { http, createConfig } from "wagmi";
 import { mainnet, optimismSepolia } from "wagmi/chains";
 // import { metaMask, walletConnect } from "wagmi/connectors";

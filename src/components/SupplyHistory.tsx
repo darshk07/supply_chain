@@ -1,14 +1,12 @@
-import React, { useState } from "react";
-import { useAccount, useReadContract } from "wagmi";
+import { useState } from "react";
+import { useAccount } from "wagmi";
 import { contractConfig } from "../config/contractConfig";
 import { Button, Input, Table, Tag } from "antd";
 import { readContract } from "@wagmi/core";
 import { config } from "../wagmiConfig";
 import { formatEther } from "viem";
-import dayjs from "dayjs";
-type Props = {};
 
-const SupplyHistory = (props: Props) => {
+const SupplyHistory = () => {
   const { address } = useAccount();
   const [productId, setProductId] = useState<string>("");
   const [data, setData] = useState<any[]>();
@@ -20,7 +18,7 @@ const SupplyHistory = (props: Props) => {
 
   const handleSubmit = async () => {
     console.log("productId", productId);
-    const result: any[] = await readContract(config, {
+    const result: any = await readContract(config, {
       ...contractConfig,
       functionName: "getSupplyHistory",
       account: address,
@@ -49,7 +47,7 @@ const SupplyHistory = (props: Props) => {
       title: "Product Id",
       dataIndex: "productId",
       key: "productId",
-      render: (text) => <span>{text.toString()}</span>,
+      render: (text: string) => <span>{text.toString()}</span>,
     },
     {
       title: "Product Name",
@@ -60,19 +58,19 @@ const SupplyHistory = (props: Props) => {
       title: "Quantity",
       dataIndex: "productAmount",
       key: "productAmount",
-      render: (text) => <span>{text.toString()}</span>,
+      render: (text: string) => <span>{text.toString()}</span>,
     },
     {
       title: "Amount",
       dataIndex: "money",
       key: "money",
-      render: (text) => <span>{formatEther(text.toString())} ETH</span>,
+      render: (text: any) => <span>{formatEther(text.toString())} ETH</span>,
     },
     {
       title: "Manufacturer",
       dataIndex: "manufacturer",
       key: "manufacturer",
-      render: (text) => {
+      render: (text: string) => {
         if (checkIfEmpty(text)) return <span>-</span>;
         return <span>{shortenAddress(text)}</span>;
       },
@@ -81,7 +79,7 @@ const SupplyHistory = (props: Props) => {
       title: "Distributor",
       dataIndex: "distributor",
       key: "distributor",
-      render: (text) => {
+      render: (text: string) => {
         if (checkIfEmpty(text)) return <span>-</span>;
         return <span>{shortenAddress(text)}</span>;
       },
@@ -90,7 +88,7 @@ const SupplyHistory = (props: Props) => {
       title: "Retailer",
       dataIndex: "retailer",
       key: "retailer",
-      render: (text) => {
+      render: (text: string) => {
         if (checkIfEmpty(text)) return <span>-</span>;
         return <span>{shortenAddress(text)}</span>;
       },
@@ -99,7 +97,7 @@ const SupplyHistory = (props: Props) => {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (text: string, row) => {
+      render: (text: string, row: any) => {
         let color = row.status.includes("Received")
           ? "green"
           : row.status.includes("Paid")
@@ -116,7 +114,7 @@ const SupplyHistory = (props: Props) => {
       title: "Timestamp",
       dataIndex: "time",
       key: "time",
-      render: (text: BigInt, row) => {
+      render: (text: BigInt) => {
         return <div>{convertUnixTimestampToDateTime(Number(text))}</div>;
       },
     },
@@ -158,7 +156,7 @@ const SupplyHistory = (props: Props) => {
   );
 };
 
-export function convertUnixTimestampToDateTime(unixTimestamp) {
+export function convertUnixTimestampToDateTime(unixTimestamp: any) {
   // Convert Unix timestamp to milliseconds
   const milliseconds = unixTimestamp * 1000;
 

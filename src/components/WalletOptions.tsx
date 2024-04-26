@@ -13,7 +13,13 @@ export function WalletOptions() {
   ));
 }
 
-function WalletOption({ connector, onClick }) {
+function WalletOption({
+  connector,
+  onClick,
+}: {
+  connector: any;
+  onClick: () => void;
+}) {
   const [ready, setReady] = React.useState(false);
 
   React.useEffect(() => {

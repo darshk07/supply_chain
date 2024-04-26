@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { Outlet } from "react-router";
 import PRELOGIN from "./Base";
-import { useAccount, useAccountEffect } from "wagmi";
+import { useAccountEffect } from "wagmi";
 import SplashScreen from "./SplashScreen";
 import { useNavigate } from "react-router-dom";
 
@@ -24,11 +24,6 @@ const RootLayout = () => {
   });
 
   useEffect(() => {
-    console.log("isConnected", isConnected);
-    // if (isConnected) {
-    //   console.log("Connected");
-    //   navigate("/home");
-    // }
     if (!isConnected) {
       console.log("Not connected");
       navigate("/");

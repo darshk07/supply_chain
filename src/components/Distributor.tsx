@@ -1,26 +1,26 @@
 import { Button, Input, Modal, Table, Tag } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { contractConfig } from "../config/contractConfig";
 import { useAccount, useWatchContractEvent, useWriteContract } from "wagmi";
-import { readContract, watchContractEvent } from "@wagmi/core";
+import { readContract } from "@wagmi/core";
 import { config } from "../wagmiConfig";
 import { formatEther, parseEther } from "viem";
 import { convertUnixTimestampToDateTime } from "./SupplyHistory";
 
 type Props = {};
 
-type Product = {
-  name: string | null;
-  price: number | null;
-  quantity: number | null;
-};
+// type Product = {
+//   name: string | null;
+//   price: number | null;
+//   quantity: number | null;
+// };
 
 function Distributor({}: Props) {
-  const { writeContract, error, isPending } = useWriteContract();
+  const { writeContract, isPending } = useWriteContract();
   const [saleProducts, setSaleProducts] = useState<any[]>([]);
   const [myProducts, setMyProducts] = useState<any[]>([]);
   const { address } = useAccount();
-  const [sellProductPrice, setSellProductPrice] = useState<number>("");
+  // const [sellProductPrice, setSellProductPrice] = useState<number>("");
 
   useEffect(() => {
     getSaleProducts();
@@ -28,7 +28,7 @@ function Distributor({}: Props) {
   }, []);
 
   const getSaleProducts = async () => {
-    const pro: any[] = await readContract(config, {
+    const pro: any = await readContract(config, {
       ...contractConfig,
       functionName: "allProductsOfManufacturer",
       account: address,
@@ -36,7 +36,7 @@ function Distributor({}: Props) {
     setSaleProducts(pro);
   };
 
-  const handleReceive = async (row) => {
+  const handleReceive = async (row: any) => {
     writeContract(
       {
         ...contractConfig,
@@ -55,7 +55,7 @@ function Distributor({}: Props) {
   };
 
   const getMyProducts = async () => {
-    const pro: any[] = await readContract(config, {
+    const pro: any = await readContract(config, {
       ...contractConfig,
       functionName: "getStatusOfAllProducts",
       account: address,
@@ -101,7 +101,7 @@ function Distributor({}: Props) {
     },
   });
 
-  const handlePay = (row) => {
+  const handlePay = (row: any) => {
     writeContract(
       {
         ...contractConfig,
@@ -128,7 +128,7 @@ function Distributor({}: Props) {
       title: "Product Name",
       dataIndex: "productName",
       key: "name",
-      render: (text) => {
+      render: (text: string) => {
         if (text === "") return <span>Test5</span>;
         return <span>{text} </span>;
       },
@@ -151,7 +151,7 @@ function Distributor({}: Props) {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (text: string, row) => {
+      render: (text: string, row: any) => {
         let color = row.status.includes("Received")
           ? "green"
           : row.status.includes("Paid")
@@ -168,14 +168,14 @@ function Distributor({}: Props) {
       title: "Time",
       dataIndex: "time",
       key: "time",
-      render: (text: BigInt, row) => {
+      render: (text: BigInt) => {
         return <div>{convertUnixTimestampToDateTime(Number(text))}</div>;
       },
     },
     {
       title: "Action",
       key: "action",
-      render: (text, row) => (
+      render: (_: string, row: any) => (
         <div>
           <Button
             type="dashed"
@@ -190,7 +190,7 @@ function Distributor({}: Props) {
     },
   ];
 
-  const modalContent = (row) => {
+  const modalContent = (row: any) => {
     let price = 0;
     console.log(price);
     return (
@@ -216,7 +216,7 @@ function Distributor({}: Props) {
     );
   };
 
-  const handleShip = (row) => {
+  const handleShip = (row: any) => {
     writeContract(
       {
         ...contractConfig,
@@ -234,7 +234,7 @@ function Distributor({}: Props) {
     );
   };
 
-  const handleSell = (row, price) => {
+  const handleSell = (row: any, price: any) => {
     console.log("Sell", price);
     writeContract(
       {
@@ -261,7 +261,7 @@ function Distributor({}: Props) {
       title: "Product Name",
       dataIndex: "productName",
       key: "name",
-      render: (text) => {
+      render: (text: any) => {
         if (text === "") return <span>Test5</span>;
         return <span>{text} </span>;
       },
@@ -284,7 +284,7 @@ function Distributor({}: Props) {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (text: string, row) => {
+      render: (text: string, row: any) => {
         let color = row.status.includes("Received")
           ? "green"
           : row.status.includes("Paid")
@@ -301,14 +301,14 @@ function Distributor({}: Props) {
       title: "Time",
       dataIndex: "time",
       key: "time",
-      render: (text: BigInt, row) => {
+      render: (text: BigInt) => {
         return <div>{convertUnixTimestampToDateTime(Number(text))}</div>;
       },
     },
     {
       title: "Action",
       key: "action",
-      render: (text, row) => {
+      render: (_: string, row: any) => {
         if (row.status === "Shipped from Manufacturer")
           return (
             <div>

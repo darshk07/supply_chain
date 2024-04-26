@@ -1,4 +1,3 @@
-import React from "react";
 import manu from "../assets/manufacturers.jpeg";
 import distri from "../assets/dsitri.jpg";
 import retailer from "../assets/retailer.jpg";

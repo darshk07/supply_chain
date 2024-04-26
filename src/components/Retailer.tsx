@@ -1,26 +1,22 @@
-import { Button, Input, Modal, Table, Tag } from "antd";
-import React, { useEffect, useState } from "react";
+import { Button, Table, Tag } from "antd";
+import { useEffect, useState } from "react";
 import { contractConfig } from "../config/contractConfig";
 import { useAccount, useWatchContractEvent, useWriteContract } from "wagmi";
-import { formatEther, parseEther, parseGwei } from "viem";
-import { readContract, watchContractEvent } from "@wagmi/core";
+import { formatEther } from "viem";
+import { readContract } from "@wagmi/core";
 import { config } from "../wagmiConfig";
-import dayjs from "dayjs";
-import { RxStopwatch } from "react-icons/rx";
 import { convertUnixTimestampToDateTime } from "./SupplyHistory";
 
 type Props = {};
 
-type Product = {
-  name: string | null;
-  price: number | null;
-  quantity: number | null;
-};
+// type Product = {
+//   name: string | null;
+//   price: number | null;
+//   quantity: number | null;
+// };
 
 function Retailer({}: Props) {
   const { address } = useAccount();
-  const [isAdding, setIsAdding] = useState<boolean>(false);
-  const [newProduct, setNewProduct] = useState<Product | null>(null);
   const { writeContract, error } = useWriteContract();
   const [products, setProducts] = useState<any[]>([]);
   const [myProducts, setMyProducts] = useState<any[]>([]);
@@ -32,7 +28,7 @@ function Retailer({}: Props) {
 
   console.log(error);
   const getProducts = async () => {
-    const pro: any[] = await readContract(config, {
+    const pro: any = await readContract(config, {
       ...contractConfig,
       functionName: "allProductsOfDistributor",
       account: address,
@@ -42,7 +38,7 @@ function Retailer({}: Props) {
   };
 
   const getMyProducts = async () => {
-    const pro: any[] = await readContract(config, {
+    const pro: any = await readContract(config, {
       ...contractConfig,
       functionName: "getStatusOfAllProducts",
       args: [address, "Retailer"],
@@ -91,7 +87,7 @@ function Retailer({}: Props) {
     },
   });
 
-  const handleProductPay = async (row) => {
+  const handleProductPay = async (row: any) => {
     writeContract({
       ...contractConfig,
       functionName: "PayByRetailer",
@@ -100,7 +96,7 @@ function Retailer({}: Props) {
     });
   };
 
-  const markAsReceived = async (row) => {
+  const markAsReceived = async (row: any) => {
     writeContract({
       ...contractConfig,
       functionName: "ReceivedToRetailer",
@@ -138,7 +134,7 @@ function Retailer({}: Props) {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (text: string, row) => {
+      render: (text: string, row: any) => {
         let color = row.status.includes("Received")
           ? "green"
           : row.status.includes("Paid")
@@ -155,14 +151,14 @@ function Retailer({}: Props) {
       title: "Timestamp",
       dataIndex: "time",
       key: "time",
-      render: (text: BigInt, row) => {
+      render: (text: BigInt) => {
         return <div>{convertUnixTimestampToDateTime(Number(text))}</div>;
       },
     },
     {
       title: "Actions",
       key: "actions",
-      render: (text, row) => {
+      render: (_: string, row: any) => {
         if (row.status === "On Sale by Distributor")
           return (
             <Button onClick={() => handleProductPay(row)} type="dashed">
@@ -203,7 +199,7 @@ function Retailer({}: Props) {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (text: string, row) => {
+      render: (text: string, row: any) => {
         let color = row.status.includes("Received")
           ? "green"
           : row.status.includes("Paid")
@@ -220,14 +216,14 @@ function Retailer({}: Props) {
       title: "Timestamp",
       dataIndex: "time",
       key: "time",
-      render: (text: BigInt, row) => {
+      render: (text: BigInt) => {
         return <div>{convertUnixTimestampToDateTime(Number(text))}</div>;
       },
     },
     {
       title: "Actions",
       key: "actions",
-      render: (text, row) => {
+      render: (_: string, row: any) => {
         if (row.status === "Shipped from Distributor")
           return (
             <Button onClick={() => markAsReceived(row)} type="dashed">

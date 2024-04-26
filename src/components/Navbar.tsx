@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { FaUser } from "react-icons/fa";
 import { MdAccountBalanceWallet } from "react-icons/md";
 import { useAccount, useBalance } from "wagmi";
 import { disconnect } from "@wagmi/core";
 import { useConnect, useAccountEffect } from "wagmi";
 import { config } from "../wagmiConfig";
-import Loading from "./Loading";
 import { useNavigate } from "react-router-dom";
 import { FaEthereum } from "react-icons/fa";
 import { FaCopy } from "react-icons/fa";
@@ -15,11 +14,11 @@ const Navbar = () => {
   const { address, isConnected: isc } = useAccount();
   const [isConnected, setIsConnected] = React.useState<Boolean>(isc);
   const { connectors, connect } = useConnect();
-  const [isLoading, setIsLoading] = React.useState<Boolean>();
   const wallet = connectors[0];
-  const balance = parseFloat(useBalance({ address })?.data?.formatted).toFixed(
-    5
-  );
+
+  const balance = parseFloat(
+    useBalance({ address })?.data?.formatted || ""
+  ).toFixed(5);
 
   const navigate = useNavigate();
   const handleLogout = async () => {
@@ -27,13 +26,11 @@ const Navbar = () => {
   };
 
   const handleLogin = async () => {
-    setIsLoading(true);
     await connect({ connector: wallet });
   };
 
   useAccountEffect({
     onConnect() {
-      setIsLoading(false);
       setIsConnected(true);
     },
     onDisconnect() {
@@ -58,7 +55,6 @@ const Navbar = () => {
 
   return (
     <div className="bg-secondary flex justify-between items-center h-20 w-full mx-auto px-4 text-white border-b border-black">
-      {/* {isLoading ? <Loading /> : null} */}
       <h1
         onClick={() => navigate("/")}
         className="p-5 text-3xl ml-7 font-semibold text-primary cursor-pointer"

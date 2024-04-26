@@ -1,7 +1,4 @@
-import React from "react";
-import { ChevronLeft, ChevronRight } from "react-feather";
 import Carousel from "./Carousel"; // Assuming Carousel is imported correctly
-import gola from "../photos/gola.png";
 
 const NoRoleAssigned = () => {
   return (

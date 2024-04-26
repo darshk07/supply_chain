@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useEffect } from "react";
 import anime from "animejs";
 
-const SplashScreen = ({ finishLoading }) => {
-  const [isMounted, setIsMounted] = useState(false);
+const SplashScreen = ({ finishLoading }: { finishLoading: () => void }) => {
   const animate = () => {
     const loader = anime.timeline({
       complete: () => finishLoading(),
@@ -47,18 +46,15 @@ const SplashScreen = ({ finishLoading }) => {
   };
 
   useEffect(() => {
-    const timeout = setTimeout(() => setIsMounted(true), 10);
+    const timeout = setTimeout(() => null, 10);
     animate();
     return () => clearTimeout(timeout);
   }, []);
 
   return (
-    <div
-      className="flex h-screen items-center justify-center bg-black"
-      // ismounted={isMounted}
-    >
+    <div className="flex h-screen items-center justify-center bg-black">
       <h1 id="logo" className="font-bold text-[#FFE900] text-7xl">
-        D-ERP
+        d-ERP
       </h1>
     </div>
   );

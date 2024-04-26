@@ -1,6 +1,3 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAccount, useAccountEffect } from "wagmi";
 import gola from "../photos/gola.png";
 
 function PRELOGIN() {
@@ -13,9 +10,6 @@ function PRELOGIN() {
           <span className="text-[#FFE900] text-2xl block mb-4 wrapper">
             <span className="typing-demo">Hello User!</span>
           </span>
-          {/* <span className="text-gray-500 text-xl">
-            CLICK BELOW TO SIGN-IN WITH YOUR META MASK ACCOUNT
-          </span> */}
         </div>
       </center>
       <center className="mt-9">
