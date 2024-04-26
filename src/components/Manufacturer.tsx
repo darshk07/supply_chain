@@ -146,6 +146,7 @@ function Manufacturer({}: Props) {
       title: "Product Id",
       dataIndex: "productId",
       key: "productId",
+      sorter: (a: any, b: any) => Number(a.productId) - Number(b.productId),
       render: (text: any) => <div>{text.toString()}</div>,
     },
     {
@@ -192,7 +193,9 @@ function Manufacturer({}: Props) {
       title: "Time",
       dataIndex: "time",
       key: "time",
+      sorter: (a: any, b: any) => Number(a.time) - Number(b.time),
       render: (text: BigInt) => {
+        console.log(text);
         return <div>{convertUnixTimestampToDateTime(Number(text))}</div>;
       },
     },
