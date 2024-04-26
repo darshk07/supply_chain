@@ -16,7 +16,7 @@ type Props = {};
 // };
 
 function Distributor({}: Props) {
-  const { writeContract, isPending } = useWriteContract();
+  const { writeContract } = useWriteContract();
   const [saleProducts, setSaleProducts] = useState<any[]>([]);
   const [myProducts, setMyProducts] = useState<any[]>([]);
   const { address } = useAccount();
@@ -169,6 +169,7 @@ function Distributor({}: Props) {
       title: "Time",
       dataIndex: "time",
       key: "time",
+      defaultSortOrder: 'descend',
       sorter: (a: any, b: any) => Number(a.time) - Number(b.time),
       render: (text: BigInt) => {
         return <div>{convertUnixTimestampToDateTime(Number(text))}</div>;
@@ -263,6 +264,7 @@ function Distributor({}: Props) {
       title: "Product Name",
       dataIndex: "productName",
       key: "name",
+      sorter: (a: any, b: any) => Number(a.name) - Number(b.name),
       render: (text: any) => {
         if (text === "") return <span>Test5</span>;
         return <span>{text} </span>;
@@ -303,6 +305,8 @@ function Distributor({}: Props) {
       title: "Time",
       dataIndex: "time",
       key: "time",
+      defaultSortOrder: 'descend',
+      sorter: (a: any, b: any) => Number(a.time) - Number(b.time),
       render: (text: BigInt) => {
         return <div>{convertUnixTimestampToDateTime(Number(text))}</div>;
       },
@@ -366,25 +370,15 @@ function Distributor({}: Props) {
       <div className="flex gap-4 flex-col">
         <div className="text-xl">Products on Sale</div>
         <div className="rounded-md">
-          <Table
-            bordered
-            loading={isPending}
-            columns={saleColumns}
-            pagination={false}
-            dataSource={saleProducts}
-          />
+          {/* @ts-ignore */}
+          <Table bordered columns={saleColumns} dataSource={saleProducts}/>
         </div>
       </div>
       <div className="flex gap-4 flex-col">
         <div className="text-xl">Your Products</div>
         <div className="rounded-md">
-          <Table
-            bordered
-            loading={isPending}
-            columns={columns}
-            pagination={false}
-            dataSource={myProducts}
-          />
+          {/* @ts-ignore */}
+          <Table bordered columns={columns} dataSource={myProducts} />
         </div>
       </div>
     </div>

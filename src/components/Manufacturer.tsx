@@ -193,6 +193,7 @@ function Manufacturer({}: Props) {
       title: "Time",
       dataIndex: "time",
       key: "time",
+      defaultSortOrder: 'descend',
       sorter: (a: any, b: any) => Number(a.time) - Number(b.time),
       render: (text: BigInt) => {
         console.log(text);
@@ -245,6 +246,7 @@ function Manufacturer({}: Props) {
       <div className="flex gap-4 flex-col">
         <div className="text-xl">Your Products</div>
         <div className="border-2 rounded-md">
+          {/* @ts-ignore */}
           <Table bordered columns={columns} dataSource={myProducts} />
         </div>
       </div>

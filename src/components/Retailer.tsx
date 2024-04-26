@@ -151,6 +151,8 @@ function Retailer({}: Props) {
       title: "Timestamp",
       dataIndex: "time",
       key: "time",
+      defaultSortOrder: 'descend',
+      sorter: (a: any, b: any) => Number(a.time) - Number(b.time),
       render: (text: BigInt) => {
         return <div>{convertUnixTimestampToDateTime(Number(text))}</div>;
       },
@@ -169,7 +171,7 @@ function Retailer({}: Props) {
     },
   ];
 
-  const myColumns = [
+  const myColumns: any = [
     {
       title: "Product Id",
       dataIndex: "productId",
@@ -217,6 +219,7 @@ function Retailer({}: Props) {
       title: "Timestamp",
       dataIndex: "time",
       key: "time",
+      defaultSortOrder: 'descend',
       sorter: (a: any, b: any) => Number(a.time) - Number(b.time),
       render: (text: BigInt) => {
         return <div>{convertUnixTimestampToDateTime(Number(text))}</div>;
@@ -250,12 +253,14 @@ function Retailer({}: Props) {
       <div className="flex gap-4 flex-col">
         <div className="text-xl">On Sale by Distributor</div>
         <div className="border-2 rounded-md ">
+          {/* @ts-ignore */}
           <Table bordered columns={columns} dataSource={products} />
         </div>
       </div>
       <div className="flex gap-4 flex-col">
         <div className="text-xl">My Products</div>
         <div className="border-2 rounded-md ">
+          {/* @ts-ignore */}
           <Table bordered columns={myColumns} dataSource={myProducts} />
         </div>
       </div>
