@@ -5,7 +5,7 @@ import { useAccount, useBalance } from "wagmi";
 import { disconnect } from "@wagmi/core";
 import { useConnect, useAccountEffect } from "wagmi";
 import { config } from "../wagmiConfig";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEthereum } from "react-icons/fa";
 import { FaCopy } from "react-icons/fa";
 import { Alert } from "antd";
@@ -100,6 +100,7 @@ const Navbar = () => {
           Get Supply History
         </div>
       ) : null}
+        <Link to={'https://drive.google.com/drive/folders/1uAx0GApDSBHrPCLffb1hruEix2WMBcR0?usp=sharing'} className="text-yellow-500 font-semibold underline">Demo Link</Link>
       <div
         onClick={isConnected ? handleLogout : handleLogin}
         className="p-3 flex items-center gap-4 hover:bg-primary rounded-xl cursor-pointer duration-300 hover:text-black m-12"
@@ -108,7 +109,10 @@ const Navbar = () => {
         {isConnected ? (
           <span>Disconnect</span>
         ) : (
-          <span>Connect to Metamask</span>
+          <>
+            
+            <span>Connect to Metamask</span>
+          </>
         )}
       </div>
     </div>
